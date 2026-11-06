@@ -78,6 +78,18 @@
           "tavily_max_chars_per_result": "Caps the characters returned per result. Tavily has no option for this, so the integration applies the cap after the search. Set 0 for no cap."
         }
       },
+      "exa": {
+        "title": "Configure Exa Web Search",
+        "description": "Configure Exa Search API settings.",
+        "data": {
+          "exa_api_key": "API Key",
+          "exa_num_results": "Number of Results",
+          "exa_max_chars_per_result": "Maximum Characters Per Result"
+        },
+        "data_description": {
+          "exa_max_chars_per_result": "Caps the characters returned per result. Exa enforces the cap on the raw page text it fetches, and the integration re-applies it to the cleaned text. Set 0 for no cap."
+        }
+      },
       "google_api_key": {
         "title": "Configure Google API Key",
         "description": "Enter your Google API key. This key is shared by Google Places and Google Routes.",

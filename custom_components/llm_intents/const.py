@@ -41,12 +41,14 @@ CONF_SEARCH_PROVIDER_BRAVE = "Brave"
 CONF_SEARCH_PROVIDER_BRAVE_LLM = "Brave LLM Context"
 CONF_SEARCH_PROVIDER_TAVILY = "Tavily"
 CONF_SEARCH_PROVIDER_SEARXNG = "SearXNG"
+CONF_SEARCH_PROVIDER_EXA = "Exa"
 
 CONF_SEARCH_PROVIDERS = {
     "Brave": CONF_SEARCH_PROVIDER_BRAVE,
     "Brave LLM Context": CONF_SEARCH_PROVIDER_BRAVE_LLM,
     "Tavily": CONF_SEARCH_PROVIDER_TAVILY,
     "SearXNG": CONF_SEARCH_PROVIDER_SEARXNG,
+    "Exa": CONF_SEARCH_PROVIDER_EXA,
 }
 
 # SearXNG-specific constants
@@ -244,6 +246,14 @@ CONF_TAVILY_COUNTRY_EXCLUDED_DEPTHS = ("fast", "ultra-fast")
 # no effect there and is not sent.
 CONF_TAVILY_CHUNKS_EXCLUDED_DEPTHS = ("ultra-fast",)
 
+# Exa-specific constants
+
+CONF_EXA_NUM_RESULTS = "exa_num_results"
+# Optional cap on the content forwarded per result. Exa's maxCharacters
+# limits the raw text it fetches, but the integration also applies the cap
+# to the cleaned text so it counts what reaches the model.
+CONF_EXA_MAX_CHARS_PER_RESULT = "exa_max_chars_per_result"
+
 CONF_TAVILY_SEARCH_DEPTHS = {
     "basic": "Basic (1 credit)",
     "advanced": "Advanced (2 credits)",
@@ -258,12 +268,14 @@ PROVIDER_GOOGLE = "google"
 PROVIDER_BRAVE = "brave"
 PROVIDER_BRAVE_LLM = "brave_llm"
 PROVIDER_TAVILY = "tavily"
+PROVIDER_EXA = "exa"
 
 # Form field keys for provider API keys
 
 CONF_GOOGLE_API_KEY = "google_api_key"
 CONF_BRAVE_API_KEY = "brave_api_key"
 CONF_TAVILY_API_KEY = "tavily_api_key"
+CONF_EXA_API_KEY = "exa_api_key"
 
 # Brave-specific constants
 
@@ -437,6 +449,8 @@ SERVICE_DEFAULTS = {
     CONF_TAVILY_INCLUDE_RAW_CONTENT: False,
     CONF_TAVILY_COUNTRY: "",
     CONF_TAVILY_MAX_CHARS_PER_RESULT: 0,
+    CONF_EXA_NUM_RESULTS: 2,
+    CONF_EXA_MAX_CHARS_PER_RESULT: 0,
     CONF_GOOGLE_PLACES_NUM_RESULTS: 2,
     CONF_GOOGLE_PLACES_LATITUDE: "",
     CONF_GOOGLE_PLACES_LONGITUDE: "",

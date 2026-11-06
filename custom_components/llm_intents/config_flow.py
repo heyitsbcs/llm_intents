@@ -59,6 +59,9 @@ from .const import (
     CONF_DAILY_WEATHER_ENTITY,
     CONF_DATE_INFO_ENABLED,
     CONF_ENTITY_HISTORY_ENABLED,
+    CONF_EXA_API_KEY,
+    CONF_EXA_MAX_CHARS_PER_RESULT,
+    CONF_EXA_NUM_RESULTS,
     CONF_GOOGLE_API_KEY,
     CONF_GOOGLE_PLACES_ENABLED,
     CONF_GOOGLE_PLACES_LATITUDE,
@@ -79,6 +82,7 @@ from .const import (
     CONF_SEARCH_PROVIDER,
     CONF_SEARCH_PROVIDER_BRAVE,
     CONF_SEARCH_PROVIDER_BRAVE_LLM,
+    CONF_SEARCH_PROVIDER_EXA,
     CONF_SEARCH_PROVIDER_SEARXNG,
     CONF_SEARCH_PROVIDER_TAVILY,
     CONF_SEARCH_PROVIDERS,
@@ -102,6 +106,7 @@ from .const import (
     CONF_YOUTUBE_ENABLED,
     DOMAIN,
     PROVIDER_BRAVE,
+    PROVIDER_EXA,
     PROVIDER_GOOGLE,
     PROVIDER_TAVILY,
     SERVICE_DEFAULTS,
@@ -119,6 +124,7 @@ STEP_BRAVE = "brave"
 STEP_BRAVE_LLM = "brave_llm"
 STEP_SEARXNG = "searxng"
 STEP_TAVILY = "tavily"
+STEP_EXA = "exa"
 STEP_GOOGLE_API_KEY = "google_api_key"
 STEP_GOOGLE_PLACES = "google_places"
 STEP_GOOGLE_ROUTES = "google_routes"
@@ -188,6 +194,7 @@ def expand_config_for_schema(config: dict) -> dict:
     result[CONF_GOOGLE_API_KEY] = provider_keys.get(PROVIDER_GOOGLE, "")
     result[CONF_BRAVE_API_KEY] = provider_keys.get(PROVIDER_BRAVE, "")
     result[CONF_TAVILY_API_KEY] = provider_keys.get(PROVIDER_TAVILY, "")
+    result[CONF_EXA_API_KEY] = provider_keys.get(PROVIDER_EXA, "")
     return result
 
 
@@ -201,6 +208,9 @@ def merge_provider_api_keys_from_input(config_data: dict, user_input: dict) -> N
         provider_keys[PROVIDER_GOOGLE] = user_input[CONF_GOOGLE_API_KEY]
     if CONF_TAVILY_API_KEY in user_input:
         provider_keys[PROVIDER_TAVILY] = user_input[CONF_TAVILY_API_KEY]
+    if CONF_EXA_API_KEY in user_input:
+        provider_keys[PROVIDER_EXA] = user_input[CONF_EXA_API_KEY]
+        provider_keys[PROVIDER_TAVILY] = user_input[CONF_TAVILY_API_KEY]
 
     if PROVIDER_BRAVE not in provider_keys and config_data.get(CONF_BRAVE_API_KEY):
         provider_keys[PROVIDER_BRAVE] = config_data[CONF_BRAVE_API_KEY]
@@ -210,6 +220,7 @@ def merge_provider_api_keys_from_input(config_data: dict, user_input: dict) -> N
     config_data.pop(CONF_BRAVE_API_KEY, None)
     config_data.pop(CONF_GOOGLE_API_KEY, None)
     config_data.pop(CONF_TAVILY_API_KEY, None)
+    config_data.pop(CONF_EXA_API_KEY, None)
 
 
 async def get_brave_schema(
@@ -424,6 +435,45 @@ async def get_tavily_schema(hass: HomeAssistant) -> vol.Schema:
                 SelectSelectorConfig(
                     mode=SelectSelectorMode.DROPDOWN,
                     options=CONF_TAVILY_COUNTRIES,
+                ),
+            ),
+        },
+    )
+
+
+async def get_exa_schema(hass: HomeAssistant) -> vol.Schema:
+    """Return the static schema for the Exa service configuration."""
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_EXA_API_KEY,
+            ): TextSelector(
+                TextSelectorConfig(
+                    type=TextSelectorType.PASSWORD,
+                ),
+            ),
+            vol.Required(
+                CONF_EXA_NUM_RESULTS,
+                default=SERVICE_DEFAULTS.get(CONF_EXA_NUM_RESULTS),
+            ): NumberSelector(
+                NumberSelectorConfig(
+                    min=1,
+                    max=20,
+                    step=1,
+                    mode=NumberSelectorMode.SLIDER,
+                    unit_of_measurement="Results",
+                ),
+            ),
+            vol.Optional(
+                CONF_EXA_MAX_CHARS_PER_RESULT,
+                default=SERVICE_DEFAULTS.get(CONF_EXA_MAX_CHARS_PER_RESULT),
+            ): NumberSelector(
+                NumberSelectorConfig(
+                    min=0,
+                    max=100000,
+                    step=1000,
+                    mode=NumberSelectorMode.BOX,
+                    unit_of_measurement="Characters",
                 ),
             ),
         },
@@ -715,6 +765,10 @@ SEARCH_STEP_ORDER = {
         lambda data: data.get(CONF_SEARCH_PROVIDER) == CONF_SEARCH_PROVIDER_TAVILY,
         get_tavily_schema,
     ],
+    STEP_EXA: [
+        lambda data: data.get(CONF_SEARCH_PROVIDER) == CONF_SEARCH_PROVIDER_EXA,
+        get_exa_schema,
+    ],
     STEP_GOOGLE_API_KEY: [
         lambda data: (
             data.get(CONF_GOOGLE_PLACES_ENABLED) or data.get(CONF_GOOGLE_ROUTES_ENABLED)
@@ -878,6 +932,13 @@ class LlmIntentsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Handle Tavily configuration step."""
         return await self.handle_step(STEP_TAVILY, user_input)
+
+    async def async_step_exa(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> FlowResult:
+        """Handle Exa configuration step."""
+        return await self.handle_step(STEP_EXA, user_input)
 
     async def async_step_google_api_key(
         self,
@@ -1156,6 +1217,13 @@ class LlmIntentsOptionsFlow(config_entries.OptionsFlowWithReload):
             self.config_data[CONF_TAVILY_COUNTRY] = None
 
         return await self.handle_step(STEP_TAVILY, user_input)
+
+    async def async_step_exa(
+        self,
+        user_input: dict[str, Any] | None = None,
+    ) -> FlowResult:
+        """Handle Exa configuration step in options flow."""
+        return await self.handle_step(STEP_EXA, user_input)
 
     async def async_step_google_api_key(
         self,

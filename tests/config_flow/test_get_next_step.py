@@ -11,6 +11,7 @@ from custom_components.llm_intents.config_flow import (
     STEP_BASIC_UTILITIES,
     STEP_BRAVE,
     STEP_BRAVE_LLM,
+    STEP_EXA,
     STEP_GOOGLE_API_KEY,
     STEP_GOOGLE_PLACES,
     STEP_GOOGLE_ROUTES,
@@ -23,6 +24,7 @@ from custom_components.llm_intents.config_flow import (
     get_basic_utilities_schema,
     get_brave_llm_schema,
     get_brave_search_schema,
+    get_exa_schema,
     get_google_api_key_schema,
     get_google_places_schema,
     get_google_routes_schema,
@@ -41,6 +43,7 @@ from custom_components.llm_intents.const import (
     CONF_SEARCH_PROVIDER,
     CONF_SEARCH_PROVIDER_BRAVE,
     CONF_SEARCH_PROVIDER_BRAVE_LLM,
+    CONF_SEARCH_PROVIDER_EXA,
     CONF_SEARCH_PROVIDER_SEARXNG,
     CONF_SEARCH_PROVIDER_TAVILY,
     CONF_WEATHER_ENABLED,
@@ -87,6 +90,12 @@ class TestGetNextStepInitialConfigOrder:
                 STEP_USER,
                 {CONF_SEARCH_PROVIDER: CONF_SEARCH_PROVIDER_TAVILY},
                 (STEP_TAVILY, get_tavily_schema),
+            ),
+            # Exa search provider
+            (
+                STEP_USER,
+                {CONF_SEARCH_PROVIDER: CONF_SEARCH_PROVIDER_EXA},
+                (STEP_EXA, get_exa_schema),
             ),
             # Google Places enabled
             (

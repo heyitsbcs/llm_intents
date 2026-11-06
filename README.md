@@ -2,7 +2,7 @@
 
 Additional tools for LLM-backed Assist for Home Assistant:
 
-* **Web Search** powered by your choice of _Brave_, _Tavily_ or _SearXNG_
+* **Web Search** powered by your choice of _Brave_, _Tavily_, _SearXNG_ or _Exa_
 * **Location Search** powered by Google Places
 * **Routes & Travel Time** powered by Google Routes
 * **Wikipedia**
@@ -155,6 +155,38 @@ Uses the Tavily Search API to return concise, relevant results, with an optional
 | `query`      | ✅        | The query to search for                                              |
 | `topic`      | ❌        | `general`, `news` or `finance`. `news` adds published dates          |
 | `time_range` | ❌        | `day`, `week`, `month` or `year` recency filter                      |
+
+---
+---
+
+### 📡 Exa Web Search
+
+Uses the Exa Search API to return search results with extracted page text (or query-relevant highlights when full text is unavailable).
+
+##### Requirements
+
+* Requires an [Exa API key](https://dashboard.exa.ai).
+    * Exa provides 1,000 free API credits when you sign up.
+
+#### Configuration Steps
+
+1. Select "Exa" as the search provider during setup.
+2. Enter your [Exa API key](https://dashboard.exa.ai).
+3. Configure the number of results and an optional cap on the characters returned per result.
+
+#### Options
+
+| Setting                          | Required | Default | Description                                                                        |
+|----------------------------------|----------|---------|------------------------------------------------------------------------------------|
+| `API Key`                        | ✅        | —       | Exa API key                                                                        |
+| `Number of Results`              | ✅        | `2`     | Number of results to provide to the LLM                                            |
+| `Maximum Characters Per Result`  | ❌        | `0`     | Caps the characters returned per result. Exa enforces the cap on the raw page text it fetches, and the integration re-applies it to the cleaned text. `0` means no cap |
+
+#### LLM-provided arguments
+
+| Argument | Required | Description                              |
+|----------|----------|------------------------------------------|
+| `query`  | ✅        | The query to search for                  |
 
 ---
 

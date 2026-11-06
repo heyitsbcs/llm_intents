@@ -210,7 +210,6 @@ def merge_provider_api_keys_from_input(config_data: dict, user_input: dict) -> N
         provider_keys[PROVIDER_TAVILY] = user_input[CONF_TAVILY_API_KEY]
     if CONF_EXA_API_KEY in user_input:
         provider_keys[PROVIDER_EXA] = user_input[CONF_EXA_API_KEY]
-        provider_keys[PROVIDER_TAVILY] = user_input[CONF_TAVILY_API_KEY]
 
     if PROVIDER_BRAVE not in provider_keys and config_data.get(CONF_BRAVE_API_KEY):
         provider_keys[PROVIDER_BRAVE] = config_data[CONF_BRAVE_API_KEY]
